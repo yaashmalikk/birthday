@@ -109,9 +109,16 @@ export default function ClaimGiftContract() {
               </span>
               <p className="mt-4 text-sm text-emerald-100/85">
                 Signed by <span className="font-bold">{status?.claimed_by ?? "Taniyaaa"}</span>
-                {status?.claimed_at
-                  ? ` · ${format(new Date(status.claimed_at), "dd MMM yyyy · h:mm a")} (IST)`
-                  : ""}
+                {(() => {
+                  try {
+                    if (!status?.claimed_at) return "";
+                    const d = new Date(status.claimed_at);
+                    if (isNaN(d.getTime())) return "";
+                    return ` · ${format(d, "dd MMM yyyy · h:mm a")} (IST)`;
+                  } catch {
+                    return "";
+                  }
+                })()}
               </p>
               {status?.response_note ? (
                 <p className="mt-2 text-sm italic text-emerald-100/70">“{status.response_note}”</p>
