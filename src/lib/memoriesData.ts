@@ -20,8 +20,12 @@ const rawMemories: Memory[] =
     ? privateData
     : (Array.isArray(sampleMemories) ? (sampleMemories as Memory[]) : []);
 
-// Base path or CDN URL for media (defaults to /media)
-const mediaBaseUrl = (import.meta.env.VITE_MEDIA_BASE_URL || "/media").replace(/\/+$/, "");
+// Base path or CDN URL for media (works on GitHub Pages subpaths and custom domains)
+const rawBase = import.meta.env.BASE_URL || "./";
+const normalizedBase = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+const mediaBaseUrl = (
+  import.meta.env.VITE_MEDIA_BASE_URL || `${normalizedBase}media`
+).replace(/\/+$/, "");
 
 export const INITIAL_MEMORIES: Memory[] = rawMemories.map((m) => {
   if (m && typeof m.image_url === "string" && m.image_url.startsWith("/media/")) {
