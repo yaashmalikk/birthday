@@ -20,19 +20,30 @@ const rawMemories: Memory[] =
     ? privateData
     : (Array.isArray(sampleMemories) ? (sampleMemories as Memory[]) : []);
 
-// Base path or CDN URL for media (works on GitHub Pages subpaths and custom domains)
+// Resolve media base path: if VITE_MEDIA_BASE_URL is a full URL (http:// or https://), use it.
+// Otherwise, resolve relative to Vite's BASE_URL (e.g., ./media or /birthday/media)
 const rawBase = import.meta.env.BASE_URL || "./";
 const normalizedBase = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
-const mediaBaseUrl = (
-  import.meta.env.VITE_MEDIA_BASE_URL || `${normalizedBase}media`
-).replace(/\/+$/, "");
 
-export const INITIAL_MEMORIES: Memory[] = rawMemories.map((m) => {
-  if (m && typeof m.image_url === "string" && m.image_url.startsWith("/media/")) {
-    return {
-      ...m,
-      image_url: m.image_url.replace(/^\/media/, mediaBaseUrl),
-    };
+const customMediaUrl = import.meta.env.VITE_MEDIA_BASE_URL;
+let mediaBaseUrl: string;
+
+if (customMediaUrl && /^https?:\/\//i.test(customMediaUrl)) {
+  mediaBaseUrl = customMediaUrl.replace(/\/+$/, "");
+} else {
+  const sub = (customMediaUrl || "media").replace(/^\/+/, "").replace(/\/+$/, "");
+  mediaBaseUrl = `${normalizedBase}${sub}`;
+}
+
+export const INITIAL_MEMORIES: Memory[] = (rawMemories || []).map((m) => {
+  if (m && typeof m.image_url === "string") {
+    if (m.image_url.startsWith("/media/") || m.image_url.startsWith("media/")) {
+      const cleanPath = m.image_url.replace(/^\/?media\//, "");
+      return {
+        ...m,
+        image_url: `${mediaBaseUrl}/${cleanPath}`,
+      };
+    }
   }
   return m;
 });
