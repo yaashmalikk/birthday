@@ -18,10 +18,11 @@ build/
 *.env
 secrets/
 
-# Personal media files (photos, videos, audio)
+# Personal media files (photos, videos)
 media/
 public/media/*
 !public/media/.gitkeep
+!public/media/*.ogg
 
 # Personal memories / private data
 src/data/*.private.*

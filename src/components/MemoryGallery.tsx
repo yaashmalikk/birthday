@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import SectionHeading from "./SectionHeading";
 import { apiGet, apiPost } from "@/lib/api";
 import type { Memory, MemoryCreate } from "@/lib/types";
+import { getDriveImageFallback } from "@/lib/memoriesData";
 import { playSparkle } from "@/lib/sounds";
 import { Button } from "@/components/ui/button";
 import {
@@ -146,9 +147,16 @@ export default function MemoryGallery() {
                       src={item.image_url}
                       alt={item.title}
                       loading="lazy"
+                      referrerPolicy="no-referrer"
                       className="h-full w-full object-cover"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).style.opacity = "0.35";
+                        const img = e.currentTarget as HTMLImageElement;
+                        const fallback = getDriveImageFallback(item.image_url);
+                        if (fallback && fallback !== img.src) {
+                          img.src = fallback;
+                        } else {
+                          img.src = "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80";
+                        }
                       }}
                     />
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0B0C1E]/95 via-[#0B0C1E]/55 to-transparent p-4 pt-10">
@@ -258,9 +266,16 @@ export default function MemoryGallery() {
                       src={m.image_url}
                       alt={m.title}
                       loading="lazy"
+                      referrerPolicy="no-referrer"
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).style.opacity = "0.35";
+                        const img = e.currentTarget as HTMLImageElement;
+                        const fallback = getDriveImageFallback(m.image_url);
+                        if (fallback && fallback !== img.src) {
+                          img.src = fallback;
+                        } else {
+                          img.src = "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80";
+                        }
                       }}
                     />
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0B0C1E]/90 to-transparent p-2.5 pt-8 text-left">
@@ -309,7 +324,17 @@ export default function MemoryGallery() {
                 ) : lightbox.media_type === "audio" ? (
                   <audio src={lightbox.image_url} controls className="w-full p-4" />
                 ) : (
-                  <img src={lightbox.image_url} alt={lightbox.title} className="max-h-[65vh] w-full object-contain" />
+                  <img
+                    src={lightbox.image_url}
+                    alt={lightbox.title}
+                    referrerPolicy="no-referrer"
+                    className="max-h-[65vh] w-full object-contain"
+                    onError={(e) => {
+                      const img = e.currentTarget as HTMLImageElement;
+                      const fallback = getDriveImageFallback(lightbox.image_url);
+                      if (fallback && fallback !== img.src) img.src = fallback;
+                    }}
+                  />
                 )}
 
                 {/* Lightbox nav arrows */}

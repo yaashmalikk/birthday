@@ -27,6 +27,7 @@ import {
   GOOGLE_DRIVE_EMBED_FOLDER_URL,
   DriveMediaItem,
 } from "@/data/driveMedia";
+import { getDriveImageFallback } from "@/lib/memoriesData";
 
 export default function MediaPresentation() {
   const [activeTab, setActiveTab] = useState<"presentation" | "grid" | "embed">("presentation");
@@ -242,8 +243,14 @@ export default function MediaPresentation() {
                         <img
                           src={currentItem.thumbnail_url}
                           alt={currentItem.title}
+                          referrerPolicy="no-referrer"
                           className="max-h-[65vh] w-auto max-w-full object-contain rounded-2xl transition-transform duration-700 group-hover:scale-105"
                           loading="lazy"
+                          onError={(e) => {
+                            const img = e.currentTarget as HTMLImageElement;
+                            const fallback = getDriveImageFallback(currentItem.thumbnail_url);
+                            if (fallback && fallback !== img.src) img.src = fallback;
+                          }}
                         />
                       </div>
                     )}
@@ -346,8 +353,14 @@ export default function MediaPresentation() {
                         <img
                           src={item.thumbnail_url}
                           alt={item.title}
+                          referrerPolicy="no-referrer"
                           className="h-full w-full object-cover"
                           loading="lazy"
+                          onError={(e) => {
+                            const img = e.currentTarget as HTMLImageElement;
+                            const fallback = getDriveImageFallback(item.thumbnail_url);
+                            if (fallback && fallback !== img.src) img.src = fallback;
+                          }}
                         />
                         {item.media_type === "video" && (
                           <div className="absolute inset-0 flex items-center justify-center bg-black/40">
@@ -438,7 +451,13 @@ export default function MediaPresentation() {
                       src={item.thumbnail_url}
                       alt={item.title}
                       loading="lazy"
+                      referrerPolicy="no-referrer"
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      onError={(e) => {
+                        const img = e.currentTarget as HTMLImageElement;
+                        const fallback = getDriveImageFallback(item.thumbnail_url);
+                        if (fallback && fallback !== img.src) img.src = fallback;
+                      }}
                     />
 
                     {/* Media Type Badge */}

@@ -38,9 +38,29 @@ export async function apiGet<T>(endpoint: string): Promise<T> {
   }
 
   if (endpoint.startsWith("/memories")) {
-    const stored = getStored<Memory[]>("birthday_memories_v3", []);
-    if (!stored || stored.length === 0) {
-      setStored("birthday_memories_v3", INITIAL_MEMORIES);
+    // Clear legacy keys if present
+    try {
+      localStorage.removeItem("birthday_memories_v3");
+      localStorage.removeItem("birthday_memories_v2");
+    } catch {
+      /* ignore */
+    }
+
+    const stored = getStored<Memory[]>("birthday_memories_v5", []);
+    const hasBrokenMedia =
+      !Array.isArray(stored) ||
+      stored.length === 0 ||
+      stored.some(
+        (m) =>
+          m.media_type !== "audio" &&
+          typeof m.image_url === "string" &&
+          (m.image_url.startsWith("/media/") ||
+            m.image_url.startsWith("media/") ||
+            m.image_url.includes("./media/"))
+      );
+
+    if (hasBrokenMedia) {
+      setStored("birthday_memories_v5", INITIAL_MEMORIES);
       return INITIAL_MEMORIES as unknown as T;
     }
     return stored as unknown as T;
@@ -71,18 +91,18 @@ export async function apiPost<T>(endpoint: string, body?: any): Promise<T> {
 
   if (endpoint.startsWith("/memories")) {
     const payload = body as MemoryCreate;
-    const memories = getStored<Memory[]>("birthday_memories_v3", INITIAL_MEMORIES);
+    const memories = getStored<Memory[]>("birthday_memories_v5", INITIAL_MEMORIES);
     const newMem: Memory = {
       id: "mem-" + Date.now(),
       title: payload.title || "Special Moment",
-      image_url: payload.image_url || INITIAL_MEMORIES[0]?.image_url || "/media/sample.jpg",
+      image_url: payload.image_url || INITIAL_MEMORIES[0]?.image_url || "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80",
       caption: payload.caption || "",
       media_type: payload.media_type || "photo",
       order_index: memories.length,
       created_at: new Date().toISOString(),
     };
     const updated = [...memories, newMem];
-    setStored("birthday_memories_v3", updated);
+    setStored("birthday_memories_v5", updated);
     return newMem as unknown as T;
   }
 

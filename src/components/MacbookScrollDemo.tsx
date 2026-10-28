@@ -66,6 +66,7 @@ export default function MacbookScrollDemo() {
               <img
                 src={activeMedia?.thumbnail_url || "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80"}
                 alt={activeMedia?.title || "Birthday Special"}
+                referrerPolicy="no-referrer"
                 className="h-44 w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).src =
