@@ -19,6 +19,7 @@ build/
 secrets/
 
 # Personal media files (photos, videos, audio)
+media/
 public/media/*
 !public/media/.gitkeep
 

@@ -3,10 +3,7 @@ import { MacbookScroll } from "@/components/ui/macbook-scroll";
 import { Sparkles, Heart } from "lucide-react";
 
 export default function MacbookScrollDemo() {
-  // Use relative base so assets load reliably on GitHub Pages and local dev
-  const rawBase = import.meta.env.BASE_URL || "./";
-  const normalizedBase = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
-  const defaultImage = `${normalizedBase}media/DSC_0524.JPG`;
+  const defaultImage = "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80";
 
   return (
     <section className="relative w-full overflow-hidden bg-[#0B0C1E] py-10 md:py-20">
