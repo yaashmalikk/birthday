@@ -1,6 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@/components/Navbar";
 import Hero3DSection from "@/components/Hero3DSection";
+import MacbookScrollDemo from "@/components/MacbookScrollDemo";
 import MemoryGallery from "@/components/MemoryGallery";
 import VoiceNotes from "@/components/VoiceNotes";
 import EnvelopeLetter from "@/components/EnvelopeLetter";
@@ -16,6 +17,7 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero3DSection />
+        <MacbookScrollDemo />
         <MemoryGallery />
         <VoiceNotes />
         <EnvelopeLetter />
