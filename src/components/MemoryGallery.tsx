@@ -142,19 +142,15 @@ export default function MemoryGallery() {
                     }}
                     initial={false}
                   >
-                    {item.media_type === "video" ? (
-                      <video src={item.image_url} muted playsInline preload="metadata" className="h-full w-full object-cover" />
-                    ) : (
-                      <img
-                        src={item.image_url}
-                        alt={item.title}
-                        loading="lazy"
-                        className="h-full w-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.opacity = "0.35";
-                        }}
-                      />
-                    )}
+                    <img
+                      src={item.image_url}
+                      alt={item.title}
+                      loading="lazy"
+                      className="h-full w-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.opacity = "0.35";
+                      }}
+                    />
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0B0C1E]/95 via-[#0B0C1E]/55 to-transparent p-4 pt-10">
                       <p className="font-heading text-sm font-bold text-white">{item.title}</p>
                       {item.caption ? <p className="mt-0.5 text-xs text-pink-200/80">{item.caption}</p> : null}
@@ -258,11 +254,15 @@ export default function MemoryGallery() {
                     data-testid={`memory-grid-item-${m.id}`}
                     className="group relative aspect-square overflow-hidden rounded-2xl border border-purple-500/20 bg-[#151632] transition-all hover:-translate-y-1 hover:border-pink-500/50 hover:shadow-[0_0_25px_rgba(255,117,143,0.3)]"
                   >
-                    {m.media_type === "video" ? (
-                      <video src={m.image_url} muted playsInline preload="metadata" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                    ) : (
-                      <img src={m.image_url} alt={m.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                    )}
+                    <img
+                      src={m.image_url}
+                      alt={m.title}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.opacity = "0.35";
+                      }}
+                    />
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0B0C1E]/90 to-transparent p-2.5 pt-8 text-left">
                       <p className="truncate text-xs font-semibold text-white">{m.title}</p>
                     </div>
@@ -295,7 +295,17 @@ export default function MemoryGallery() {
             <div className="flex flex-col gap-3">
               <div className="relative overflow-hidden rounded-xl bg-black">
                 {lightbox.media_type === "video" ? (
-                  <video src={lightbox.image_url} controls autoPlay playsInline className="max-h-[65vh] w-full object-contain" />
+                  lightbox.image_url.includes("googleusercontent.com/d/") ? (
+                    <iframe
+                      src={lightbox.image_url.replace("https://lh3.googleusercontent.com/d/", "https://drive.google.com/file/d/").replace(/\/$/, "") + "/preview"}
+                      title={lightbox.title}
+                      className="h-[55vh] md:h-[65vh] w-full border-0"
+                      allow="autoplay; encrypted-media"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <video src={lightbox.image_url} controls autoPlay playsInline className="max-h-[65vh] w-full object-contain" />
+                  )
                 ) : lightbox.media_type === "audio" ? (
                   <audio src={lightbox.image_url} controls className="w-full p-4" />
                 ) : (

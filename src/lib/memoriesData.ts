@@ -1,5 +1,17 @@
 import type { Memory } from "./types";
 import sampleMemories from "../data/memories.sample.json";
+import { DRIVE_MEDIA_ITEMS } from "../data/driveMedia";
+
+// Convert all 48 Drive media items into the Memory format
+const driveMemories: Memory[] = DRIVE_MEDIA_ITEMS.map((item, idx) => ({
+  id: item.id,
+  title: item.title,
+  image_url: item.thumbnail_url,
+  caption: item.caption,
+  media_type: item.media_type,
+  order_index: idx,
+  created_at: item.created_at,
+}));
 
 // Safely attempt to load private memories if present locally (git-ignored)
 let privateData: Memory[] | undefined;
@@ -13,15 +25,16 @@ try {
   privateData = undefined;
 }
 
-// Use private memories when available unless explicitly disabled
+// Use private memories when available, otherwise prioritize Google Drive media items, fallback to sample
 const usePrivate = import.meta.env.VITE_USE_PRIVATE_MEMORIES !== "false";
 const rawMemories: Memory[] =
   usePrivate && Array.isArray(privateData) && privateData.length > 0
     ? privateData
+    : driveMemories.length > 0
+    ? driveMemories
     : (Array.isArray(sampleMemories) ? (sampleMemories as Memory[]) : []);
 
 // Resolve media base path: if VITE_MEDIA_BASE_URL is a full URL (http:// or https://), use it.
-// Otherwise, resolve relative to Vite's BASE_URL (e.g., ./media or /birthday/media)
 const rawBase = import.meta.env.BASE_URL || "./";
 const normalizedBase = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
 
